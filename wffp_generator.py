@@ -709,6 +709,61 @@ def erdos_bfstree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True,
     return instance
 
 
+def geo_bfstree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+    """Returns a WFFP Random Geometric BFS Tree instance in the unit cube of dimensions `dim`.
+    
+    Parameters
+    ----------
+    n : int
+        Number of nodes.
+    r : float
+        The distance threshold. Edges are included in the edge list if the distance between the two nodes is less than `r`.
+    dim : int, optional (default 2)
+        Dimension of graph.
+    fighter_pos : list or None (default)
+        The Firefighter initial position. If `None`, position is chosen at random in the unit cube
+        of dimensions `dim`.
+    burnt_nodes : int, optional (default 1)
+        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    seed : int or None (default)
+        Indicator of random number generation state.
+    
+    Returns
+    -------
+    A_fire : numpy array
+        n x n adjacency matrix of the fire graph.
+    D_fighter : numpy array
+        (n+1) x (n+1) distance matrix of the firefighter graph. The last row and column corresponds
+        to the firefighter.
+    burnt_nodes : list
+        Initial burnt nodes.
+    fighter_pos : list
+        Initial firefighter position.
+    node_pos : list
+        Positions of the nodes"""
+
+    random.seed(seed)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+
+    # Fire graph
+    G_ = geo_graph(n, r, dim, connected, seed)
+    G_fire, _ = bfs_tree(G_)
+    A_fire = adjacency_matrix(G_fire)
+
+    # Firefighter graph
+    pos = nx.get_node_attributes(G_fire,'pos')
+    pos[n] = fighter_pos
+    G_fighter = complete_graph(n+1, dim, pos)
+    D_fighter = euclidean_matrix(G_fighter)
+
+    nodes_pos = [coor for u, coor in pos.items()][:-1]
+    instance = {'A': A_fire, 'D': D_fighter, 'fighter_pos': fighter_pos,
+        'node_pos': nodes_pos, 'burnt_nodes': burnt_nodes, 'G_fire': G_fire,
+        'G_fighter': G_fighter}
+    instance = SimpleNamespace(**instance)
+    return instance
+
+
 def draw_ffp(inst):
     """ Draw a 2D-Walking Fire Fighter intance.
     Parameters
