@@ -586,7 +586,7 @@ def nm_erdos_stree(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, 
     return instance
 
 
-def reds(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None):
+def reds_stree(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None):
     """Returns a WFFP REDS spanning tree (or forest) instance in the unit cube of dimensions `dim`.
     
     Parameters
@@ -634,7 +634,7 @@ def reds(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None):
 
     # Fire graph
     G_ = reds_graph(n, R, E, S, t)
-    G_fire = spanning_tree(G_)
+    G_fire, _ = spanning_tree(G_)
     A_fire = adjacency_matrix(G_fire)
 
     # Firefighter graph
