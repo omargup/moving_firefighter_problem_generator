@@ -1,2 +1,1 @@
-# walking_firefighter_problem
-Walking Firefighter problem instances generator
+# Walking Firefighter problem instances generator
