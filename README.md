@@ -1,1 +1,1 @@
-# Walking Firefighter problem instances generator
+# Moving Firefighter problem instances generator
