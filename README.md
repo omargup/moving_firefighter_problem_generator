@@ -4,7 +4,7 @@ This package build on top of Networkx contains instances generator of the Walkin
 
 ## Install
 ```
-pip install wffp-gen
+pip install .....
 ```
 
 ## Usage
