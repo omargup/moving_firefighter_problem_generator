@@ -8,4 +8,3 @@ pip install wffp-gen
 ```
 
 ## Usage
-
