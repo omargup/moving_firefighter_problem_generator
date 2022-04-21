@@ -35,12 +35,11 @@ pip install movingfp
 
 ## Simple example
 
-Create an erdos instance, draw and access its attributes
+Create an erdos instance and access its attributes
 
 ```bash
 >>> import movingfp.gen as mfp
 >>> x = mfp.erdos(n=8, p=0.5)
->>> mfp.draw_ffp(x)
 >>> x.A
 >>> x.D
 >>> x.fighter_pos
@@ -49,6 +48,14 @@ Create an erdos instance, draw and access its attributes
 >>> G_fire = x.G_fire
 >>> G_fighter = x.G_fighter
 ```
+
+Draw the instance
+
+```bash
+>>> mfp.draw_ffp(x)
+```
+
+![Erdos instance](img/erdos_instance.png)
 
 ## To Do
 
