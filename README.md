@@ -2,21 +2,10 @@
 
 This package built on top of Networkx contains instances generators of the Moving Firefighter Problem (MFP) proposed by the Network and Data Science Laboratory CIC-IPN México.
 
-- **Source:** https://github.com/omargup/firefighter_problem_generator
-- **Tutorial:** https://github.com/omargup/firefighter_problem_generator/blob/main/tutorial.ipynb
-- **YouTube:** 
+- **Source:** <https://github.com/omargup/firefighter_problem_generator>
+- **Tutorial:** <https://github.com/omargup/firefighter_problem_generator/blob/main/tutorial.ipynb>
+- **YouTube:**
 - **Papers:**
-
-Every instance provides the following attributes:
-
-- `A`. The $n \times n$ adjacency matrix of the fire graph.
-- `D`. The $(n+1) \times (n+1)$ distance matrix of the firefighter graph where the last row and column are the firefighter distances to every node.
-- `T`. The time steps it takes to burn the graph.
-- `fighter_pos`. The $d$-dimensional firefighter position.
-- `node_pos`. A $n \times d$ matrix with the node positions.
-- `burnt_nodes`. List with the indices of the initial burnt nodes.
-- `G_fire`. Networkx fire graph.
-- `G_fighter`. Networkx firefighter graph.
 
 ## Install
 
@@ -86,3 +75,47 @@ Draw the instance. Fire graph in green, firefighter graph in gray, initial burnt
 ```
 
 ![Erdos instance](img/erdos_instance.png)
+
+## Instaces
+
+An instance of the Moving Firefighter Problem consists of two main parts: a fire graph and a firefighter graph.
+
+- The fire graph `G_fire` represents the instance seen from the fire's point of view; this graph with $n$ nodes in $[0,1]^d$ and the edge weights set to $1$ is created following a particular procedure (depending on the generator).
+- The firefighter graph `G_fighter` represents the instance seen from the firefighter's point of view; it has $n+1$ nodes: the same $n$ nodes of the fire graph and an extra node representing the firefighter. The firefighter graph is a complete graph with edge weights created or computed according to the generator.
+
+Every MFP instance provides the following attributes:
+
+- `A`. The $n \times n$ adjacency matrix of the fire graph.
+- `D`. The $(n+1) \times (n+1)$ distance matrix of the firefighter graph where the last row and column are the firefighter distances to every node.
+- `T`. The time steps it takes to burn the fire graph.
+- `fighter_pos`. The $d$-dimensional firefighter position.
+- `node_pos`. A $n \times d$ matrix with the node positions.
+- `burnt_nodes`. List with the indices of the initial burnt nodes.
+- `G_fire`. Networkx fire graph.
+- `G_fighter`. Networkx firefighter graph.
+
+## Generators
+
+MFP generators follow different strategies to create random instances. In all cases, by default, the initial position of the firefighter is selected at random in $[0,1]^d$; in the same way, once the number of initial fires is selected, their position is randomly set among all nodes.
+
+Currently, these generators are available:
+
+- Base generators
+  - **Erdos:** Nodes of an Erdős-Rényi graph are placed randomly, with a uniform probability in $[0,1]^d$. Each of the possible edges is added with probability $p$. Edge weights of the firefighter graph correspond to the Euclidean distance.
+  - **Geometric:** The $n$ nodes are uniformly sampled from the $[0,1]^d$￼space. Edges are included in the graph if the Euclidean distance is inferior o equal to a given radius r. Edge weights of the firefighter graph correspond to the Euclidean distance.
+  - **No Metric Erdos:** An Erdos instance with randomly chosen firefighter edge weights in a given interval.
+  - **REDS:** The $n$ nodes are uniformly sampled from the $[0,1]^d$ space; then, the edges are generated following the Energy-Constrained Spatial Social Network Model proposed in <https://eprints.soton.ac.uk/364826/>. Edge weights of the firefighter graph correspond to the Euclidean distance.
+- Spanning Trees generator
+  - Erdos Spanning Tree
+  - Geometric Spanning Tree
+  - No Metric Erdos Spanning Tree
+  - REDS Spanning Tree
+- BFS Trees generators
+  - Erdos BFS Tree
+  - Geometric BFS Tree
+  - No Metric Erdos BFS Tree
+  - REDS BFS Tree
+
+## To Do
+
+## License
