@@ -101,11 +101,11 @@ MFP generators follow different strategies to create random instances. In all ca
 Currently, these generators are available:
 
 - Base generators
-  - **Erdos:** Nodes of an Erdős-Rényi graph are placed randomly, with a uniform probability in $[0,1]^d$. Each of the possible edges is added with probability $p$. Edge weights of the firefighter graph correspond to the Euclidean distance.
-  - **Geometric:** The $n$ nodes are uniformly sampled from the $[0,1]^d$￼space. Edges are included in the graph if the Euclidean distance is inferior o equal to a given radius r. Edge weights of the firefighter graph correspond to the Euclidean distance.
-  - **No Metric Erdos:** An Erdos instance with randomly chosen firefighter edge weights in a given interval.
-  - **REDS:** The $n$ nodes are uniformly sampled from the $[0,1]^d$ space; then, the edges are generated following the Energy-Constrained Spatial Social Network Model proposed in <https://eprints.soton.ac.uk/364826/>. Edge weights of the firefighter graph correspond to the Euclidean distance.
-- Spanning Trees generator
+  - **Erdos:** Nodes of an Erdős-Rényi graph are placed randomly, with a uniform probability in $[0,1]^d$. Each of the possible edges is added with probability $p$. Euclidean distances are assigned to every edge in the firefighter graph.
+  - **Geometric:** The $n$ nodes are uniformly sampled from the $[0,1]^d$￼space. Edges are included in the graph if the Euclidean distance is inferior o equal to a given radius r. Euclidean distances are assigned to every edge in the firefighter graph.
+  - **No Metric Erdos:** An Erdos instance with random weights (distances) in a given interval assigned to each edge in the firefighter graph.
+  - **REDS:** The $n$ nodes are placed randomly, with a uniform probability in the unit square $[0,1]^2$. The edges are generated following the Energy-Constrained Spatial Social Network Model proposed in <https://eprints.soton.ac.uk/364826/>. Euclidean distances are assigned to every edge in the firefighter graph.
+- Spanning Trees generators
   - Erdos Spanning Tree
   - Geometric Spanning Tree
   - No Metric Erdos Spanning Tree
