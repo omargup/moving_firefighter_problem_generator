@@ -87,7 +87,6 @@ Every MFP instance provides the following attributes:
 
 - `A`. The $n \times n$ adjacency matrix of the fire graph.
 - `D`. The $(n+1) \times (n+1)$ distance matrix of the firefighter graph where the last row and column are the firefighter distances to every node.
-- `T`. The time steps it takes to burn the fire graph.
 - `fighter_pos`. The $d$-dimensional firefighter position.
 - `node_pos`. A $n \times d$ matrix with the node positions.
 - `burnt_nodes`. List with the indices of the initial burnt nodes.
