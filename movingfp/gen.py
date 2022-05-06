@@ -1,11 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
-from itertools import combinations
 import random
 import math 
 import time
+from itertools import combinations
 from types import SimpleNamespace
+
+from movingfp.reds_utils import sum_costs, dist_toroidal
+
 
 def initial_config(n, dim, fighter_coor, num_burnt_nodes):
     if n < 2 or type(dim) != int:
@@ -130,39 +133,6 @@ def bfs_tree(G):
     T.add_edges_from(bfs_edges)
     return T, G
 
-
-def sum_costs(G, d, i,j,S):
-    """
-    Code from: https://github.com/jesgadiaz/REDS_creator
-    """
-    Ni = [n for n in G[i]]
-    Nj = [n for n in G[j]]
-    set_Ni = set(Ni)
-    set_Nj = set(Nj)
-    k = len(set_Ni.intersection(set_Nj))
-    c = 0
-    for p in Ni:
-        c = (d[i][j] / (1 + S * k)) + c
-    return c
-
-def dist_toroidal(nodes, i,j):
-    """
-    Code from: https://github.com/jesgadiaz/REDS_creator
-    """
-    p1 = nodes[i]
-    p2 = nodes[j]
-    dx = 0
-    dy = 0
-    if p1[0] <= p2[0]:
-        dx = min(p1[0] + (1-p2[0]), p2[0] - p1[0])
-    else:
-        dx = min(p2[0] + (1-p1[0]), p1[0] - p2[0])
-    if p1[1] <= p2[1]:
-        dy = min(p1[1] + (1-p2[1]), p2[1] - p1[1])
-    else:
-        dy = min(p2[1] + (1-p1[1]), p1[1] - p2[1])
-    d = math.sqrt(dx**2 + dy**2)
-    return d
 
 def reds_graph(n, R, E, S, t):
     """
