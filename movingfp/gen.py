@@ -763,7 +763,7 @@ def geo_bfstree(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, see
     return instance
 
 
-def draw_ffp(inst):
+def draw_mfp(inst):
     """ Draw a 2D-Moving Fire Fighter intance.
     Parameters
     ----------
