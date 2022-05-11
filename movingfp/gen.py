@@ -33,7 +33,6 @@ def initial_config(n, dim, fighter_coor, num_fires, seed):
         raise ValueError('`num_fires` must be a integer number between 1 and n-1.')
     burnt_nodes = random.sample(list(range(n)), k=num_fires)
     
-    print(fighter_pos, burnt_nodes)
     return fighter_pos, burnt_nodes
 
 
