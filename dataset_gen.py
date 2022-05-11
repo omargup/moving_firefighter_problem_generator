@@ -1,3 +1,6 @@
+########################################
+# Script to generate the Dataset       #
+########################################
 import movingfp.data as data
 
 # Generate and save instances as yaml files
