@@ -22,7 +22,7 @@ Create an erdos instance and access its attributes.
 ```python
 >>> import movingfp.gen as mfp
 
->>> x = mfp.erdos(n=8, p=0.5, burnt_nodes=2)
+>>> x = mfp.erdos(n=8, p=0.5, num_fires=2)
 
 >>> x.A  # Adjacency matrix (Fire graph)
 array([[0, 1, 1, 1, 0, 1, 1, 1],
@@ -71,7 +71,7 @@ array([[0.00, 0.65, 0.63, 0.52, 0.52, 0.93, 0.10, 0.85, 0.13],
 Draw the instance. Fire graph in green, firefighter graph in gray, initial burnt nodes in red, and firefighter in blue.
 
 ```python
->>> mfp.draw_ffp(x)
+>>> mfp.draw_mfp(x)
 ```
 
 ![Erdos instance](img/erdos_instance.png)
@@ -89,7 +89,7 @@ Every MFP instance provides the following attributes:
 - `D`. The $(n+1) \times (n+1)$ distance matrix of the firefighter graph where the last row and column are the firefighter distances to every node.
 - `fighter_pos`. The $d$-dimensional firefighter position.
 - `node_pos`. A $n \times d$ matrix with the node positions.
-- `burnt_nodes`. List with the indices of the initial burnt nodes.
+- `num_fires`. List with the indices of the initial burnt nodes.
 - `G_fire`. Networkx fire graph.
 - `G_fighter`. Networkx firefighter graph.
 
