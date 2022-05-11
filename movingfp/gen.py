@@ -10,7 +10,8 @@ from types import SimpleNamespace
 from movingfp.reds_utils import sum_costs, dist_toroidal
 
 
-def initial_config(n, dim, fighter_coor, num_burnt_nodes):
+def initial_config(n, dim, fighter_coor, num_fires, seed):
+    random.seed(seed)
     if n < 2 or type(dim) != int:
         raise ValueError('The number `n` of nodes must be a integer greater or equal than 2.')
     
@@ -27,10 +28,12 @@ def initial_config(n, dim, fighter_coor, num_burnt_nodes):
         for _ in range(dim):
             fighter_pos.append(random.uniform(0,1))
     
-    if num_burnt_nodes >= n or num_burnt_nodes < 1 or type(num_burnt_nodes) != int:
-        raise ValueError('`burnt_nodes` must be a integer number between 1 and n-1.')
-    burnt_nodes = random.choices(list(range(n)), k=num_burnt_nodes)
+    random.seed(seed)
+    if num_fires >= n or num_fires < 1 or type(num_fires) != int:
+        raise ValueError('`num_fires` must be a integer number between 1 and n-1.')
+    burnt_nodes = random.sample(list(range(n)), k=num_fires)
     
+    print(fighter_pos, burnt_nodes)
     return fighter_pos, burnt_nodes
 
 
@@ -177,7 +180,7 @@ def reds_graph(n, R, E, S, t):
     return G
 
 
-def erdos(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+def erdos(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP Erdos instance in the unit cube of dimensions `dim`.
     
     Parameters
@@ -191,8 +194,8 @@ def erdos(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=No
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -211,7 +214,8 @@ def erdos(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=No
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    #TODO: separate initial_config into 2 function, one for fighter_pos and other for burnt_nodes
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_fire = erdos_graph(n, p, dim, connected, seed)
@@ -231,7 +235,7 @@ def erdos(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=No
     return instance
 
 
-def geo(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+def geo(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP Random Geometric instance in the unit cube of dimensions `dim`.
     
     Parameters
@@ -245,8 +249,8 @@ def geo(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -265,7 +269,7 @@ def geo(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_fire = geo_graph(n, r, dim, connected, seed)
@@ -285,7 +289,7 @@ def geo(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None
     return instance
 
 
-def nm_erdos(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+def nm_erdos(n, p, dist_interval, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP No Metric Erdos instance in the unit cube of dimensions `dim`, with distances in the interval `dist_interval`.
     
     Parameters
@@ -302,8 +306,8 @@ def nm_erdos(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, connec
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -322,7 +326,7 @@ def nm_erdos(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, connec
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_fire = erdos_graph(n, p, dim, connected, seed)
@@ -342,7 +346,7 @@ def nm_erdos(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, connec
     return instance
 
 
-def reds(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None):
+def reds(n, R, E, S, t, dim=2, fighter_pos=None, num_fires=1, seed=None):
     """Returns a WFFP REDS instance in the unit cube of dimensions `dim`.
     
     Parameters
@@ -362,8 +366,8 @@ def reds(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None):
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -389,7 +393,7 @@ def reds(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None):
 
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_fire = reds_graph(n, R, E, S, t)
@@ -413,7 +417,7 @@ def reds(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None):
 
 
 
-def erdos_stree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+def erdos_stree(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP Erdos spanning tree (or forest) instance in the unit cube of dimensions `dim`.
     
     Parameters
@@ -427,8 +431,8 @@ def erdos_stree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, s
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -447,7 +451,7 @@ def erdos_stree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, s
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_ = erdos_graph(n, p, dim, connected, seed)
@@ -468,7 +472,7 @@ def erdos_stree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, s
     return instance
 
 
-def geo_stree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+def geo_stree(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP Random Geometric spanning tree (or forest) instance in the unit cube of dimensions `dim`.
     
     Parameters
@@ -482,8 +486,8 @@ def geo_stree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, see
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -502,7 +506,7 @@ def geo_stree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, see
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_ = geo_graph(n, r, dim, connected, seed)
@@ -522,7 +526,7 @@ def geo_stree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, see
     instance = SimpleNamespace(**instance)
     return instance
 
-def nm_erdos_stree(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+def nm_erdos_stree(n, p, dist_interval, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP No Metric Erdos spanning tree (or forest) instance in the unit cube of dimensions `dim`,
     with distances in the interval `dist_interval`.
     
@@ -540,8 +544,8 @@ def nm_erdos_stree(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, 
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -560,7 +564,7 @@ def nm_erdos_stree(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, 
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_ = erdos_graph(n, p, dim, connected, seed)
@@ -581,7 +585,7 @@ def nm_erdos_stree(n, p, dist_interval, dim=2, fighter_pos=None, burnt_nodes=1, 
     return instance
 
 
-def reds_stree(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None):
+def reds_stree(n, R, E, S, t, dim=2, fighter_pos=None, num_fires=1, seed=None):
     """Returns a WFFP REDS spanning tree (or forest) instance in the unit cube of dimensions `dim`.
     
     Parameters
@@ -601,8 +605,8 @@ def reds_stree(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None)
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -625,7 +629,7 @@ def reds_stree(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None)
     Code: https://github.com/jesgadiaz/REDS_creator"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_ = reds_graph(n, R, E, S, t)
@@ -646,7 +650,7 @@ def reds_stree(n, R, E, S, t, dim=2, fighter_pos=None, burnt_nodes=1, seed=None)
     return instance
 
 
-def erdos_bfstree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+def erdos_bfstree(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP Erdos BFS tree instance in the unit cube of dimensions `dim`.
     
     The starting node for breadth-first search is chosen at random from V. BFS iterates over only
@@ -663,8 +667,8 @@ def erdos_bfstree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True,
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -683,7 +687,7 @@ def erdos_bfstree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True,
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_ = erdos_graph(n, p, dim, connected, seed)
@@ -704,7 +708,7 @@ def erdos_bfstree(n, p, dim=2, fighter_pos=None, burnt_nodes=1, connected= True,
     return instance
 
 
-def geo_bfstree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, seed=None):
+def geo_bfstree(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP Random Geometric BFS Tree instance in the unit cube of dimensions `dim`.
     
     Parameters
@@ -718,8 +722,8 @@ def geo_bfstree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, s
     fighter_pos : list or None (default)
         The Firefighter initial position. If `None`, position is chosen at random in the unit cube
         of dimensions `dim`.
-    burnt_nodes : int, optional (default 1)
-        Number of initial burnt nodes. `burnt_nodes` nodes are chosen at random from `n` nodes.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
     seed : int or None (default)
         Indicator of random number generation state.
     
@@ -738,7 +742,7 @@ def geo_bfstree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, s
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, burnt_nodes)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
 
     # Fire graph
     G_ = geo_graph(n, r, dim, connected, seed)
@@ -760,10 +764,10 @@ def geo_bfstree(n, r, dim=2, fighter_pos=None, burnt_nodes=1, connected= True, s
 
 
 def draw_ffp(inst):
-    """ Draw a 2D-Walking Fire Fighter intance.
+    """ Draw a 2D-Moving Fire Fighter intance.
     Parameters
     ----------
-    inst : a Walking Fire Fighter intance."""
+    inst : a Moving Fire Fighter intance."""
 
     G_fire = inst.G_fire
     G_fighter = inst.G_fighter
