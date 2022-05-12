@@ -12,7 +12,7 @@ This package built on top of Networkx contains instances generators of the Movin
 Install the last version of movingfp
 
 ```bash
-pip install -e git+https://github.com/omargup/firefighter_problem_generator#egg=movingfp
+pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
 ```
 
 ## Simple example
