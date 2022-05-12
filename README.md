@@ -2,8 +2,8 @@
 
 This package built on top of Networkx contains instances generators of the Moving Firefighter Problem (MFP) proposed by the Network and Data Science Laboratory CIC-IPN México.
 
-- **Source:** <https://github.com/omargup/firefighter_problem_generator>
-- **Tutorial:** <https://github.com/omargup/firefighter_problem_generator/blob/main/tutorial.ipynb>
+- **Source:** <https://github.com/omargup/moving_firefighter_problem_generator>
+- **Tutorial:** <https://github.com/omargup/moving_firefighter_problem_generator/blob/main/tutorial.ipynb>
 - **YouTube:**
 - **Papers:**
 
