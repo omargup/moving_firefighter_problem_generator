@@ -1,4 +1,4 @@
-# 📦 Moving Firefighter Problem instances generator
+# 📦 Moving Firefighter Problem Generator
 
 This package built on top of Networkx contains instances generators of the Moving Firefighter Problem (MFP) proposed by the Network and Data Science Laboratory CIC-IPN México.
 
@@ -12,7 +12,7 @@ This package built on top of Networkx contains instances generators of the Movin
 Install the last version of movingfp
 
 ```bash
-pip install movingfp
+pip install -e git+https://github.com/omargup/firefighter_problem_generator#egg=movingfp
 ```
 
 ## Simple example
