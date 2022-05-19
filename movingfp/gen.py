@@ -268,7 +268,7 @@ def geo(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_fire = geo_graph(n, r, dim, connected, seed)
@@ -325,7 +325,7 @@ def nm_erdos(n, p, dist_interval, dim=2, fighter_pos=None, num_fires=1, connecte
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_fire = erdos_graph(n, p, dim, connected, seed)
@@ -392,7 +392,7 @@ def reds(n, R, E, S, t, dim=2, fighter_pos=None, num_fires=1, seed=None):
 
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_fire = reds_graph(n, R, E, S, t)
@@ -450,7 +450,7 @@ def erdos_stree(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, see
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_ = erdos_graph(n, p, dim, connected, seed)
@@ -505,7 +505,7 @@ def geo_stree(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_ = geo_graph(n, r, dim, connected, seed)
@@ -563,7 +563,7 @@ def nm_erdos_stree(n, p, dist_interval, dim=2, fighter_pos=None, num_fires=1, co
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_ = erdos_graph(n, p, dim, connected, seed)
@@ -628,7 +628,7 @@ def reds_stree(n, R, E, S, t, dim=2, fighter_pos=None, num_fires=1, seed=None):
     Code: https://github.com/jesgadiaz/REDS_creator"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_ = reds_graph(n, R, E, S, t)
@@ -686,7 +686,7 @@ def erdos_bfstree(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, s
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_ = erdos_graph(n, p, dim, connected, seed)
@@ -741,7 +741,7 @@ def geo_bfstree(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, see
         Positions of the nodes"""
 
     random.seed(seed)
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires)
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
     # Fire graph
     G_ = geo_graph(n, r, dim, connected, seed)
