@@ -233,6 +233,92 @@ def erdos(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None
     instance = SimpleNamespace(**instance)
     return instance
 
+######################################################
+
+def erdos_graph2(n, p, dim, seed=None):
+    """Returns a networkx Erdos graph."""
+    ###########   
+    G = nx.erdos_renyi_graph(n, p, seed=seed, directed=False)
+    pos = {v: [random.random() for i in range(dim)] for v in range(n)}
+    nx.set_node_attributes(G, pos, "pos")
+    ###########
+        
+    return G
+
+
+def erdos_graph_forced(n, p, dim,  seed=None):
+    """Returns a connected erdos graph of size n.
+    """
+    #print(f'p: {p}')
+    for current_n in range(n, n + int(n/4)):
+        #print(f'n: {current_n}')
+        for trial in range(20):  # attempts
+            #print(f'trial: {trial}')
+            G = erdos_graph2(current_n, p, dim, seed=None)
+            largest_cc = max(nx.connected_components(G), key=len)
+            if len(largest_cc) == n:
+                G = G.subgraph(largest_cc).copy()
+                G = nx.convert_node_labels_to_integers(G, first_label=0, ordering='default', label_attribute=None)
+                return G
+    
+    raise Exception("It was impossible to build a connected graph with the given parameters. Try again or tray with other parameters.")
+
+
+def erdos_connected(n, p, dim=2, fighter_pos=None, num_fires=1, seed=None):
+    """Returns a connected MFP Erdos instance in the unit cube of dimensions `dim`.
+    
+    Parameters
+    ----------
+    n : int
+        Number of nodes.
+    p : float
+        Probability for edge creation.
+    dim : int, optional (default 2)
+        Dimension of graph.
+    fighter_pos : list or None (default)
+        The Firefighter initial position. If `None`, position is chosen at random in the unit cube
+        of dimensions `dim`.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
+    seed : int or None (default)
+        Indicator of random number generation state.
+    
+    Returns
+    -------
+    A_fire : numpy array
+        n x n adjacency matrix of the fire graph.
+    D_fighter : numpy array
+        (n+1) x (n+1) distance matrix of the firefighter graph. The last row and column corresponds
+        to the firefighter.
+    burnt_nodes : list
+        Initial burnt nodes.
+    fighter_pos : list
+        Initial firefighter position.
+    node_pos : list
+        Positions of the nodes"""
+
+    random.seed(seed)
+    #TODO: separate initial_config into 2 function, one for fighter_pos and other for burnt_nodes
+    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
+
+    # Fire graph
+    G_fire = erdos_graph_forced(n, p, dim, seed)
+    A_fire = adjacency_matrix(G_fire)
+
+    # Firefighter graph
+    pos = nx.get_node_attributes(G_fire,'pos')
+    pos[n] = fighter_pos
+    G_fighter = complete_graph(n+1, dim, pos)
+    D_fighter = euclidean_matrix(G_fighter)
+
+    nodes_pos = [coor for u, coor in pos.items()][:-1]
+    instance = {'A': A_fire, 'D': D_fighter, 'fighter_pos': fighter_pos,
+        'node_pos': nodes_pos, 'burnt_nodes': burnt_nodes, 'G_fire': G_fire,
+        'G_fighter': G_fighter}
+    instance = SimpleNamespace(**instance)
+    return instance
+######################################################
+
 
 def geo(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
     """Returns a WFFP Random Geometric instance in the unit cube of dimensions `dim`.
