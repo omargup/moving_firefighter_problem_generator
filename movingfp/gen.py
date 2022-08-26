@@ -10,6 +10,10 @@ from types import SimpleNamespace
 from movingfp.reds_utils import sum_costs, dist_toroidal
 
 
+############### CAUTION
+#TODO: random.seed(seed) is missing when creating graphs!!!
+#########
+
 def initial_config(n, dim, fighter_coor, num_fires, seed):
     random.seed(seed)
     if n < 2 or type(dim) != int:
@@ -79,6 +83,7 @@ def complete_graph(n, dim, pos=None):
 
 def erdos_graph(n, p, dim, connected, seed):
     """Returns a networkx Erdos graph."""
+    random.seed(seed)
     is_connected = False
     count = 0
     while not is_connected:
@@ -212,7 +217,7 @@ def erdos(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None
     node_pos : list
         Positions of the nodes"""
 
-    random.seed(seed)
+    #random.seed(seed)
     #TODO: separate initial_config into 2 function, one for fighter_pos and other for burnt_nodes
     fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
@@ -237,7 +242,8 @@ def erdos(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None
 
 def erdos_graph2(n, p, dim, seed=None):
     """Returns a networkx Erdos graph."""
-    ###########   
+    ###########
+    random.seed(seed)   
     G = nx.erdos_renyi_graph(n, p, seed=seed, directed=False)
     pos = {v: [random.random() for i in range(dim)] for v in range(n)}
     nx.set_node_attributes(G, pos, "pos")
@@ -297,7 +303,7 @@ def erdos_connected(n, p, dim=2, fighter_pos=None, num_fires=1, seed=None):
     node_pos : list
         Positions of the nodes"""
 
-    random.seed(seed)
+    #random.seed(seed)
     #TODO: separate initial_config into 2 function, one for fighter_pos and other for burnt_nodes
     fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
 
