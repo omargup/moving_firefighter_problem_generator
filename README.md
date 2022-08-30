@@ -17,6 +17,10 @@ pip install --upgrade networkx
 pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
 ```
 
+## Warning
+
+At this moment only connected_erdos is available
+
 ## Simple example
 
 Create an erdos instance and access its attributes.
@@ -24,7 +28,7 @@ Create an erdos instance and access its attributes.
 ```python
 >>> import movingfp.gen as mfp
 
->>> x = mfp.erdos(n=8, p=0.5, num_fires=2)
+>>> x = mfp.erdos_connected(n=8, p=0.5, num_fires=2)
 
 >>> x.A  # Adjacency matrix (Fire graph)
 array([[0, 1, 1, 1, 0, 1, 1, 1],
