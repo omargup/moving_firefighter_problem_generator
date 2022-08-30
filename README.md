@@ -9,9 +9,11 @@ This package built on top of Networkx contains instances generators of the Movin
 
 ## Install
 
-Install the last version of movingfp
+Movingfp requires Python 3.8 or greater. First, make sure you have the latest version of Numpy and Networkx. Install the current release of movingfp with pip:
 
 ```bash
+pip install --upgrade numpy
+pip install --upgrade networkx
 pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
 ```
 

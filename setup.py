@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="movingfp",
-    version="0.1.1",
+    version="0.2.0",
     license='MIT',
     author="Network and Data Science Laboratory CIC-IPN México",
     author_email="omar.gup@gmail.com",

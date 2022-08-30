@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 import random
+import numpy as np
 import math 
 import time
 from itertools import combinations
@@ -10,18 +11,13 @@ from types import SimpleNamespace
 from movingfp.reds_utils import sum_costs, dist_toroidal
 
 
-############### CAUTION
-#TODO: random.seed(seed) is missing when creating graphs!!!
-#########
+def init_fighter_pos(dim, fighter_coor, generator=None):
+    if generator is None:
+        generator = np.random.default_rng()
 
-def initial_config(n, dim, fighter_coor, num_fires, seed):
-    random.seed(seed)
-    if n < 2 or type(dim) != int:
-        raise ValueError('The number `n` of nodes must be a integer greater or equal than 2.')
-    
     if dim < 2 or type(dim) != int:
         raise ValueError('dimension `dim` must be a integer greater or equal than 2.')
-    
+
     if fighter_coor is not None:
         if len(fighter_coor) != dim:
             raise ValueError('Fighter position must be a float list with the same dimension than dim.')
@@ -30,14 +26,26 @@ def initial_config(n, dim, fighter_coor, num_fires, seed):
     else:
         fighter_pos = []
         for _ in range(dim):
-            fighter_pos.append(random.uniform(0,1))
+            fighter_pos.append(generator.uniform(0,1))
+
+    return fighter_pos
+
+
+def init_burnt_nodes(n, num_fires, generator=None):
+    if generator is None:
+        generator = np.random.default_rng()
+
+    if n < 2:
+        raise ValueError('The number `n` of nodes must be a integer greater or equal than 2.')
     
-    random.seed(seed)
     if num_fires >= n or num_fires < 1 or type(num_fires) != int:
         raise ValueError('`num_fires` must be a integer number between 1 and n-1.')
-    burnt_nodes = random.sample(list(range(n)), k=num_fires)
-    
-    return fighter_pos, burnt_nodes
+
+    #burnt_nodes = random.sample(list(range(n)), k=num_fires)
+    #burnt_nodes = generator.choice(list(range(n)), size=num_fires, replace=False)
+    burnt_nodes = generator.permutation(n)[:num_fires]
+
+    return burnt_nodes
 
 
 def euclidean_matrix(G):
@@ -53,15 +61,20 @@ def euclidean_matrix(G):
     return nx.to_numpy_array(G)
 
 
-def rand_distance_matrix(G, dist_interval):
+def rand_distance_matrix(G, dist_interval, generator=None):
+    if generator is None:
+        generator = np.random.default_rng()
+
     if len(dist_interval) != 2:
         raise ValueError('Edge distance interval `dist_interval` must be a list of size 2; e.g.: [0.1, 3.5]')
+    
     # Create Random Edge Weights
     min_dist, max_dist = dist_interval
     for (u, v) in G.edges():
         #dist = random.randint(min_dist, max_dist)
-        dist = random.uniform(min_dist, max_dist)
+        dist = generator.uniform(min_dist, max_dist)
         G.edges[u, v]['weight'] = dist
+    
     return nx.to_numpy_array(G)
 
 
@@ -71,36 +84,155 @@ def adjacency_matrix(G):
     return nx.to_numpy_array(G).astype(int)
 
 
-def complete_graph(n, dim, pos=None):
+def complete_graph(n, dim, pos=None, generator=None):
     '''Builds a networkx complete graph.'''
+    if generator is None:
+        generator = np.random.default_rng()
+
     G = nx.complete_graph(n)
     if pos is None:
-        pos = {v: [random.random() for i in range(dim)] for v in range(n)}
+        pos = {v: [generator.random() for i in range(dim)] for v in range(n)}
     #TODO: check pos, dim and n
     nx.set_node_attributes(G, pos, "pos")
+    
     return G
 
 
-def erdos_graph(n, p, dim, connected, seed):
+def erdos_graph(n, p, dim, generator=None):
     """Returns a networkx Erdos graph."""
-    random.seed(seed)
-    is_connected = False
-    count = 0
-    while not is_connected:
-        ###########   
-        G = nx.erdos_renyi_graph(n, p, seed=seed, directed=False)
-        pos = {v: [random.random() for i in range(dim)] for v in range(n)}
-        nx.set_node_attributes(G, pos, "pos")
-        ###########
-        count += 1
-        if connected:
-            is_connected = nx.is_connected(G)
-            if not is_connected and count==20:
-                raise Exception("After 20 attempts, it was impossible to build a connected graph with the given parameters. Try with other parameters.")
-        else:
-            is_connected = True
+    if generator is None:
+        generator = np.random.default_rng()
+        nx_seed = None
+    else:
+        nx_seed = int(generator.integers(low=0, high=2147483646))
+
+    G = nx.erdos_renyi_graph(n, p, seed=nx_seed, directed=False)
+    
+    pos = {v: [generator.random() for i in range(dim)] for v in range(n)}
+    nx.set_node_attributes(G, pos, "pos")
         
     return G
+
+
+def erdos_graph_forced(n, p, dim,  generator=None):
+    """Returns a connected erdos graph of size n.
+    """
+    #print(f'p: {p}')
+    for current_n in range(n, n + int(n/4)):
+        #print(f'n: {current_n}')
+        for trial in range(20):  # attempts
+            #print(f'trial: {trial}')
+            G = erdos_graph(current_n, p, dim, generator)
+            largest_cc = max(nx.connected_components(G), key=len)
+            if len(largest_cc) == n:
+                G = G.subgraph(largest_cc).copy()
+                G = nx.convert_node_labels_to_integers(G, first_label=0, ordering='default', label_attribute=None)
+                return G
+    
+    raise Exception("It was impossible to build a connected graph with the given parameters. Try again or tray with other parameters.")
+
+
+
+def erdos_connected(n, p, dim=2, fighter_pos=None, num_fires=1, generator=None):
+    """Returns a connected MFP Erdos instance in the unit cube of dimensions `dim`.
+    
+    Parameters
+    ----------
+    n : int
+        Number of nodes.
+    p : float
+        Probability for edge creation.
+    dim : int, optional (default 2)
+        Dimension of graph.
+    fighter_pos : list or None (default)
+        The Firefighter initial position. If `None`, position is chosen at random in the unit cube
+        of dimensions `dim`.
+    num_fires : int, optional (default 1)
+        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
+    generator : None (default) or np.random._generator.Generator.
+        Indicator of random number generation state.
+    
+    Returns
+    -------
+    A_fire : numpy array
+        n x n adjacency matrix of the fire graph.
+    D_fighter : numpy array
+        (n+1) x (n+1) distance matrix of the firefighter graph. The last row and column corresponds
+        to the firefighter.
+    burnt_nodes : list
+        Initial burnt nodes.
+    fighter_pos : list
+        Initial firefighter position.
+    node_pos : list
+        Positions of the nodes"""
+
+    if generator is None:
+        generator = np.random.default_rng()
+    if generator is not None and (type(generator) != np.random._generator.Generator):
+        raise TypeError("´generator´ must be of type numpy.random._generator.Generator")
+    
+    #if seed is not None:
+    #    ss = np.random.SeedSequence(seed)
+    #    child_seeds = ss.spawn(3)
+    #    rng = [np.random.default_rng(s) for s in child_seeds]
+
+    # if seed is not None: generator = rng[0]
+    fighter_pos = init_fighter_pos(dim, fighter_pos, generator)
+    
+    # if seed is not None: generator = rng[1] 
+    burnt_nodes = init_burnt_nodes(n, num_fires, generator)
+
+    # Fire graph
+    # if seed is not None: generator = rng[2]
+    G_fire = erdos_graph_forced(n, p, dim, generator)
+    A_fire = adjacency_matrix(G_fire)
+
+    # Firefighter graph
+    pos = nx.get_node_attributes(G_fire,'pos')
+    pos[n] = fighter_pos
+    G_fighter = complete_graph(n+1, dim, pos)
+    D_fighter = euclidean_matrix(G_fighter)
+
+    nodes_pos = [coor for u, coor in pos.items()][:-1]
+    instance = {'A': A_fire, 'D': D_fighter, 'fighter_pos': fighter_pos,
+        'node_pos': nodes_pos, 'burnt_nodes': burnt_nodes, 'G_fire': G_fire,
+        'G_fighter': G_fighter}
+    instance = SimpleNamespace(**instance)
+    
+    return instance
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def erdos_graph(n, p, dim, connected, seed):
+#     """Returns a networkx Erdos graph."""
+#     random.seed(seed)
+#     is_connected = False
+#     count = 0
+#     while not is_connected:
+#         ###########   
+#         G = nx.erdos_renyi_graph(n, p, seed=seed, directed=False)
+#         pos = {v: [random.random() for i in range(dim)] for v in range(n)}
+#         nx.set_node_attributes(G, pos, "pos")
+#         ###########
+#         count += 1
+#         if connected:
+#             is_connected = nx.is_connected(G)
+#             if not is_connected and count==20:
+#                 raise Exception("After 20 attempts, it was impossible to build a connected graph with the given parameters. Try with other parameters.")
+#         else:
+#             is_connected = True
+        
+#     return G
 
 
 def geo_graph(n, r, dim, connected, seed):
@@ -238,92 +370,7 @@ def erdos(n, p, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None
     instance = SimpleNamespace(**instance)
     return instance
 
-######################################################
 
-def erdos_graph2(n, p, dim, seed=None):
-    """Returns a networkx Erdos graph."""
-    ###########
-    random.seed(seed)   
-    G = nx.erdos_renyi_graph(n, p, seed=seed, directed=False)
-    pos = {v: [random.random() for i in range(dim)] for v in range(n)}
-    nx.set_node_attributes(G, pos, "pos")
-    ###########
-        
-    return G
-
-
-def erdos_graph_forced(n, p, dim,  seed=None):
-    """Returns a connected erdos graph of size n.
-    """
-    #print(f'p: {p}')
-    for current_n in range(n, n + int(n/4)):
-        #print(f'n: {current_n}')
-        for trial in range(20):  # attempts
-            #print(f'trial: {trial}')
-            G = erdos_graph2(current_n, p, dim, seed=None)
-            largest_cc = max(nx.connected_components(G), key=len)
-            if len(largest_cc) == n:
-                G = G.subgraph(largest_cc).copy()
-                G = nx.convert_node_labels_to_integers(G, first_label=0, ordering='default', label_attribute=None)
-                return G
-    
-    raise Exception("It was impossible to build a connected graph with the given parameters. Try again or tray with other parameters.")
-
-
-def erdos_connected(n, p, dim=2, fighter_pos=None, num_fires=1, seed=None):
-    """Returns a connected MFP Erdos instance in the unit cube of dimensions `dim`.
-    
-    Parameters
-    ----------
-    n : int
-        Number of nodes.
-    p : float
-        Probability for edge creation.
-    dim : int, optional (default 2)
-        Dimension of graph.
-    fighter_pos : list or None (default)
-        The Firefighter initial position. If `None`, position is chosen at random in the unit cube
-        of dimensions `dim`.
-    num_fires : int, optional (default 1)
-        Number of initial burnt nodes. `num_fires` nodes are chosen at random from `n` nodes.
-    seed : int or None (default)
-        Indicator of random number generation state.
-    
-    Returns
-    -------
-    A_fire : numpy array
-        n x n adjacency matrix of the fire graph.
-    D_fighter : numpy array
-        (n+1) x (n+1) distance matrix of the firefighter graph. The last row and column corresponds
-        to the firefighter.
-    burnt_nodes : list
-        Initial burnt nodes.
-    fighter_pos : list
-        Initial firefighter position.
-    node_pos : list
-        Positions of the nodes"""
-
-    #random.seed(seed)
-    #TODO: separate initial_config into 2 function, one for fighter_pos and other for burnt_nodes
-    fighter_pos, burnt_nodes = initial_config(n, dim, fighter_pos, num_fires, seed)
-
-    # Fire graph
-    G_fire = erdos_graph_forced(n, p, dim, seed)
-    A_fire = adjacency_matrix(G_fire)
-
-    # Firefighter graph
-    pos = nx.get_node_attributes(G_fire,'pos')
-    pos[n] = fighter_pos
-    G_fighter = complete_graph(n+1, dim, pos)
-    D_fighter = euclidean_matrix(G_fighter)
-
-    nodes_pos = [coor for u, coor in pos.items()][:-1]
-    instance = {'A': A_fire, 'D': D_fighter, 'fighter_pos': fighter_pos,
-        'node_pos': nodes_pos, 'burnt_nodes': burnt_nodes, 'G_fire': G_fire,
-        'G_fighter': G_fighter}
-    instance = SimpleNamespace(**instance)
-    return instance
-######################################################
 
 
 def geo(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, seed=None):
