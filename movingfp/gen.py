@@ -8,6 +8,7 @@ import time
 from itertools import combinations
 from types import SimpleNamespace
 
+import plotly.graph_objects as go
 from movingfp.reds_utils import sum_costs, dist_toroidal
 
 
@@ -901,11 +902,11 @@ def geo_bfstree(n, r, dim=2, fighter_pos=None, num_fires=1, connected= True, see
     return instance
 
 
-def draw_mfp(inst):
+def plot2d(inst):
     """ Draw a 2D-Moving Fire Fighter intance.
     Parameters
     ----------
-    inst : a Moving Fire Fighter intance."""
+    inst : a 2D Moving Fire Fighter intance."""
 
     G_fire = inst.G_fire
     G_fighter = inst.G_fighter
@@ -914,7 +915,7 @@ def draw_mfp(inst):
 
     pos = nx.get_node_attributes(G_fire,'pos')
     if len(pos[0]) != 2:
-        raise Exception("Only 2-dimensional graphs can be plotted")
+        raise Exception("Only 2-dimensional graphs can be plotted with plot2d.")
 
     fig, ax = plt.subplots(figsize=(7,7))
 
@@ -957,3 +958,211 @@ def draw_mfp(inst):
     plt.axis(limits)
     plt.axis('on')
     plt.show()
+
+
+
+def plot3d(inst, plot_labels=False, plot_grid=False):
+    """ Draw a 3D-Moving Fire Fighter intance.
+    Parameters
+    ----------
+    inst : a 3D Moving Fire Fighter intance.
+    plot_axis: Plot axis and grid if True (Default False).
+    plot_labels: Plot node labels if True (Default False)."""
+
+    G_fire = inst.G_fire
+    G_fighter = inst.G_fighter
+    agent_pos = inst.fighter_pos
+    burnt_nodes = list(inst.burnt_nodes)
+
+
+    # Get node position in x, y and z.
+    pos = nx.get_node_attributes(G_fire,'pos')
+    if len(pos[0]) != 3:
+        raise Exception("Only 3-dimensional graphs can be plotted with plot3d.")
+    
+    num_nodes = len(pos)
+
+    pos_x = [pos[i][0] for i in range(num_nodes)] 
+    pos_y = [pos[i][1] for i in range(num_nodes)]
+    pos_z = [pos[i][2] for i in range(num_nodes)]
+
+
+    # Get edge position in x, y, z. Each position includes
+    # the starting and ending point.
+    edge_list = G_fire.edges
+
+    x_edges=[]
+    y_edges=[]
+    z_edges=[]
+
+    for edge in edge_list:
+        #format: [beginning, ending, None]
+        x_coords = [pos[edge[0]][0], pos[edge[1]][0]]
+        x_edges += x_coords
+
+        y_coords = [pos[edge[0]][1], pos[edge[1]][1]]
+        y_edges += y_coords
+
+        z_coords = [pos[edge[0]][2], pos[edge[1]][2]]
+        z_edges += z_coords
+    
+
+    # Trace for edges
+    trace_edges = go.Scatter3d(x=x_edges,
+                            y=y_edges,
+                            z=z_edges,
+                            mode='lines',
+                            showlegend= False,
+                            line=dict(color='#073b4c',
+                                        width=1.5),
+                            opacity=0.8,
+                            hoverinfo='none')
+    
+    #Trace for nodes
+    node_labels = [i for i in range(num_nodes)]
+
+    mode = 'markers'
+    if plot_labels:
+        mode = 'markers+text'
+
+    trace_nodes = go.Scatter3d(x=pos_x,
+                            y=pos_y,
+                            z=pos_z,
+                            mode=mode,
+                            name='Undefended',
+                            marker=dict(symbol='circle',
+                                        size=10,
+                                        color='#06d6a0', 
+                                        opacity=0.8,
+                                        line=dict(color='#06d6a0', width=0.5)),
+                            text=node_labels,
+                            hoverinfo='text')
+    
+    trace_fighter = go.Scatter3d(x=[agent_pos[0]],
+                             y=[agent_pos[1]],
+                             z=[agent_pos[2]],
+                             mode='markers',
+                             name='Anchor',
+                             marker=dict(symbol='diamond',
+                                         size=10,
+                                         color='#118ab2',
+                                         opacity=0.8,
+                                         line=dict(color='#118ab2',
+                                                   width=0.5)),
+                             text = ['Anchor'],
+                             hoverinfo = 'text')
+    
+
+    fires_x = [pos_x[i] for i in burnt_nodes]
+    fires_y = [pos_y[i] for i in burnt_nodes]
+    fires_z = [pos_z[i] for i in burnt_nodes]
+
+    trace_fires = go.Scatter3d(x=fires_x,
+                            y=fires_y,
+                            z=fires_z,
+                            mode='markers',
+                            name='Initial fires',
+                            marker=dict(symbol='circle',
+                                            size=10,
+                                            color='#ef476f',
+                                            opacity=0.8,
+                                            line=dict(color='#ef476f',
+                                                    width=0.5)),
+                                text = burnt_nodes,
+                                hoverinfo = 'text')
+
+
+    
+    #we need to set the axis for the plot 
+
+    grid_show = False
+    if plot_grid:
+        grid_show = True
+
+    axis_x = dict(showbackground=False,
+                
+                showticklabels=grid_show ,
+                zeroline=grid_show ,
+                zerolinecolor="#6c757d",
+                zerolinewidth = 0.5,
+
+                showline = grid_show ,
+                linecolor="#6c757d",
+                linewidth = 0.5,
+                
+                showgrid=grid_show ,
+                gridcolor="#6c757d",
+                gridwidth=0.5,
+                #griddash='dash',
+                range = [-0.1,1.1],
+                title='x' if plot_grid else '')
+
+    axis_y = dict(showbackground=False,
+                
+                showticklabels=grid_show ,
+                zeroline=grid_show ,
+                zerolinecolor="#6c757d",
+                zerolinewidth = 0.5,
+
+                showline = grid_show ,
+                linecolor="#6c757d",
+                linewidth = 0.5,
+                
+                showgrid=grid_show ,
+                gridcolor="#6c757d",
+                gridwidth=0.5,
+                #griddash='dash',
+                range = [-0.1,1.1],
+                title='y' if plot_grid else '')
+
+    axis_z = dict(showbackground=False,
+                
+                showticklabels=grid_show ,
+                zeroline=grid_show ,
+                zerolinecolor="#6c757d",
+                zerolinewidth = 0.5,
+
+                showline = grid_show ,
+                linecolor="#6c757d",
+                linewidth = 0.5,
+                
+                showgrid=grid_show ,
+                gridcolor="#6c757d",
+                gridwidth=0.5,
+                #griddash='5px',
+                range = [-0.1,1.1],
+                title='z' if plot_grid else '')
+    
+
+
+    # Layout for our plot
+    layout = go.Layout(title="",
+                width=750,
+                height=650,
+                showlegend=True,
+                legend_title='',
+                legend_yanchor='middle',
+                
+                
+                legend_y= 0.5,
+                scene=dict(xaxis=dict(axis_x),
+                        yaxis=dict(axis_y),
+                        zaxis=dict(axis_z)),
+                margin=dict(l=80, r=80, b=80, t=80),
+                hovermode='closest',
+                
+                
+                )
+    
+
+
+
+    #Include the traces we want to plot and create a figure
+    data = [trace_edges, trace_nodes, trace_fighter, trace_fires]
+    fig = go.Figure(data=data,
+                    layout=layout,
+
+
+    )
+
+    fig.show()

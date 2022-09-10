@@ -9,11 +9,12 @@ This package built on top of Networkx contains instances generators of the Movin
 
 ## Install
 
-Movingfp requires Python 3.8 or greater. First, make sure you have the latest version of Numpy and Networkx. Install the current release of movingfp with pip:
+Movingfp requires Python 3.8 or greater. First, make sure you have the latest version of Numpy, Networkx, and Plotly. Install the current release of movingfp with pip:
 
 ```bash
 pip install --upgrade numpy
 pip install --upgrade networkx
+pip install --upgrade plotly
 pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
 ```
 
@@ -23,7 +24,7 @@ At this moment only connected_erdos is available
 
 ## Simple example
 
-Create an erdos instance and access its attributes.
+Create a 2D connected erdos instance and access its attributes.
 
 ```python
 >>> import movingfp.gen as mfp
@@ -77,10 +78,25 @@ array([[0.00, 0.65, 0.63, 0.52, 0.52, 0.93, 0.10, 0.85, 0.13],
 Draw the instance. Fire graph in green, firefighter graph in gray, initial burnt nodes in red, and firefighter in blue.
 
 ```python
->>> mfp.draw_mfp(x)
+>>> mfp.plot2d(x)
 ```
 
-![Erdos instance](img/erdos_instance.png)
+![2D Erdos instance](img/erdos_instance.png)
+
+## Simple example 2
+
+Create a 3D connected erdos instance.
+
+```python
+>>> import movingfp.gen as mfp
+
+>>> x = mfp.erdos_connected(n=8, p=0.5, dim=3, num_fires=2)
+
+```python
+>>> mfp.plot3d(x, plot_grid=True, plot_labels=True)
+```
+
+![3D Erdos instance](img/3d_erdos_instance.png)
 
 ## Instaces
 
