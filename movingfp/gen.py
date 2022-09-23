@@ -961,11 +961,12 @@ def plot2d(inst):
 
 
 
-def plot3d(inst, plot_labels=False, plot_grid=False):
+def plot3d(inst, node_size=10, plot_labels=False, plot_grid=False):
     """ Draw a 3D-Moving Fire Fighter intance.
     Parameters
     ----------
-    inst : a 3D Moving Fire Fighter intance.
+    inst: a 3D Moving Fire Fighter intance.
+    node_size: Int. The nodes' size.
     plot_axis: Plot axis and grid if True (Default False).
     plot_labels: Plot node labels if True (Default False)."""
 
@@ -997,13 +998,13 @@ def plot3d(inst, plot_labels=False, plot_grid=False):
 
     for edge in edge_list:
         #format: [beginning, ending, None]
-        x_coords = [pos[edge[0]][0], pos[edge[1]][0]]
+        x_coords = [pos[edge[0]][0], pos[edge[1]][0], None]
         x_edges += x_coords
 
-        y_coords = [pos[edge[0]][1], pos[edge[1]][1]]
+        y_coords = [pos[edge[0]][1], pos[edge[1]][1], None]
         y_edges += y_coords
 
-        z_coords = [pos[edge[0]][2], pos[edge[1]][2]]
+        z_coords = [pos[edge[0]][2], pos[edge[1]][2], None]
         z_edges += z_coords
     
 
@@ -1031,7 +1032,7 @@ def plot3d(inst, plot_labels=False, plot_grid=False):
                             mode=mode,
                             name='Undefended',
                             marker=dict(symbol='circle',
-                                        size=10,
+                                        size=node_size,
                                         color='#06d6a0', 
                                         opacity=0.8,
                                         line=dict(color='#06d6a0', width=0.5)),
@@ -1044,7 +1045,7 @@ def plot3d(inst, plot_labels=False, plot_grid=False):
                              mode='markers',
                              name='Anchor',
                              marker=dict(symbol='diamond',
-                                         size=10,
+                                         size=node_size,
                                          color='#118ab2',
                                          opacity=0.8,
                                          line=dict(color='#118ab2',
@@ -1063,7 +1064,7 @@ def plot3d(inst, plot_labels=False, plot_grid=False):
                             mode='markers',
                             name='Initial fires',
                             marker=dict(symbol='circle',
-                                            size=10,
+                                            size=node_size,
                                             color='#ef476f',
                                             opacity=0.8,
                                             line=dict(color='#ef476f',
@@ -1155,14 +1156,9 @@ def plot3d(inst, plot_labels=False, plot_grid=False):
                 )
     
 
-
-
     #Include the traces we want to plot and create a figure
     data = [trace_edges, trace_nodes, trace_fighter, trace_fires]
     fig = go.Figure(data=data,
-                    layout=layout,
-
-
-    )
+                    layout=layout)
 
     fig.show()

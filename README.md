@@ -93,7 +93,7 @@ Create a 3D connected erdos instance.
 >>> x = mfp.erdos_connected(n=8, p=0.5, dim=3, num_fires=2)
 
 
->>> mfp.plot3d(x, plot_grid=True, plot_labels=True)
+>>> mfp.plot3d(x, node_size=10, plot_grid=True, plot_labels=True)
 ```
 
 ![3D Erdos instance](img/3d_erdos_instance.png)
