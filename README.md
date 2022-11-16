@@ -18,10 +18,6 @@ pip install --upgrade plotly
 pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
 ```
 
-## Warning
-
-At this moment only connected_erdos is available
-
 ## Simple example
 
 Create a 2D connected erdos instance and access its attributes.
@@ -83,6 +79,7 @@ Draw the instance. Fire graph in green, firefighter graph in gray, initial burnt
 
 ![2D Erdos instance](img/erdos_instance.png)
 
+
 ## Simple example 2
 
 Create a 3D connected erdos instance.
@@ -97,6 +94,7 @@ Create a 3D connected erdos instance.
 ```
 
 ![3D Erdos instance](img/3d_erdos_instance.png)
+
 
 ## Instaces
 
@@ -122,21 +120,4 @@ MFP generators follow different strategies to create random instances. In all ca
 Currently, these generators are available:
 
 - Base generators
-  - **Erdos:** Nodes of an Erdős-Rényi graph are placed randomly, with a uniform probability in $[0,1]^d$. Each of the possible edges is added with probability $p$. Euclidean distances are assigned to every edge in the firefighter graph.
-  - **Geometric:** The $n$ nodes are uniformly sampled from the $[0,1]^d$￼space. Edges are included in the graph if the Euclidean distance is inferior o equal to a given radius r. Euclidean distances are assigned to every edge in the firefighter graph.
-  - **No Metric Erdos:** An Erdos instance with random weights (distances) in a given interval assigned to each edge in the firefighter graph.
-  - **REDS:** The $n$ nodes are placed randomly, with a uniform probability in the unit square $[0,1]^2$. The edges are generated following the Energy-Constrained Spatial Social Network Model proposed in <https://eprints.soton.ac.uk/364826/>. Euclidean distances are assigned to every edge in the firefighter graph.
-- Spanning Trees generators
-  - Erdos Spanning Tree
-  - Geometric Spanning Tree
-  - No Metric Erdos Spanning Tree
-  - REDS Spanning Tree
-- BFS Trees generators
-  - Erdos BFS Tree
-  - Geometric BFS Tree
-  - No Metric Erdos BFS Tree
-  - REDS BFS Tree
-
-## To Do
-
-## License
+  - **Erdos Connected:** Nodes of an Erdős-Rényi graph are placed randomly, with a uniform probability in $[0,1]^d$. Each of the possible edges is added with probability $p$. Euclidean distances are assigned to every edge in the firefighter graph. Because Erdős-Rényi does not guarantee connected graphs, Erdos Connected generates a series of graphs $G′ = (V′, E′)$ of size $n ≤ |V′| < n + ⌈n/ 4⌉$ following the Erdős-Rényi model, until finding a graph $G′$ with a connected component of size $n$ which is used as $G$.
