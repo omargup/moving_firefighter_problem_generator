@@ -8,20 +8,23 @@ This package built on top of Networkx contains instances generators of the Movin
 
 ## Install
 
-Install the last version of movingfp
+Movingfp requires Python 3.8 or greater. First, make sure you have the latest version of Numpy, Networkx, and Plotly. Install the current release of movingfp with pip:
 
 ```bash
+pip install --upgrade numpy
+pip install --upgrade networkx
+pip install --upgrade plotly
 pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
 ```
 
 ## Simple example
 
-Create an erdos instance and access its attributes.
+Create a 2D connected erdos instance and access its attributes.
 
 ```python
 >>> import movingfp.gen as mfp
 
->>> x = mfp.erdos(n=8, p=0.5, num_fires=2)
+>>> x = mfp.erdos_connected(n=8, p=0.5, num_fires=2)
 
 >>> x.A  # Adjacency matrix (Fire graph)
 array([[0, 1, 1, 1, 0, 1, 1, 1],
@@ -70,10 +73,27 @@ array([[0.00, 0.65, 0.63, 0.52, 0.52, 0.93, 0.10, 0.85, 0.13],
 Draw the instance. Fire graph in green, firefighter graph in gray, initial burnt nodes in red, and firefighter in blue.
 
 ```python
->>> mfp.draw_mfp(x)
+>>> mfp.plot2d(x)
 ```
 
-![Erdos instance](img/erdos_instance.png)
+![2D Erdos instance](img/erdos_instance.png)
+
+
+## Simple example 2
+
+Create a 3D connected erdos instance.
+
+```python
+>>> import movingfp.gen as mfp
+
+>>> x = mfp.erdos_connected(n=8, p=0.5, dim=3, num_fires=2)
+
+
+>>> mfp.plot3d(x, node_size=10, plot_grid=True, plot_labels=True)
+```
+
+![3D Erdos instance](img/3d_erdos_instance.png)
+
 
 ## Instaces
 
@@ -99,21 +119,4 @@ MFP generators follow different strategies to create random instances. In all ca
 Currently, these generators are available:
 
 - Base generators
-  - **Erdos:** Nodes of an Erdős-Rényi graph are placed randomly, with a uniform probability in $[0,1]^d$. Each of the possible edges is added with probability $p$. Euclidean distances are assigned to every edge in the firefighter graph.
-  - **Geometric:** The $n$ nodes are uniformly sampled from the $[0,1]^d$￼space. Edges are included in the graph if the Euclidean distance is inferior o equal to a given radius r. Euclidean distances are assigned to every edge in the firefighter graph.
-  - **No Metric Erdos:** An Erdos instance with random weights (distances) in a given interval assigned to each edge in the firefighter graph.
-  - **REDS:** The $n$ nodes are placed randomly, with a uniform probability in the unit square $[0,1]^2$. The edges are generated following the Energy-Constrained Spatial Social Network Model proposed in <https://eprints.soton.ac.uk/364826/>. Euclidean distances are assigned to every edge in the firefighter graph.
-- Spanning Trees generators
-  - Erdos Spanning Tree
-  - Geometric Spanning Tree
-  - No Metric Erdos Spanning Tree
-  - REDS Spanning Tree
-- BFS Trees generators
-  - Erdos BFS Tree
-  - Geometric BFS Tree
-  - No Metric Erdos BFS Tree
-  - REDS BFS Tree
-
-## To Do
-
-## License
+  - **Erdos Connected:** Nodes of an Erdős-Rényi graph are placed randomly, with a uniform probability in $[0,1]^d$. Each of the possible edges is added with probability $p$. Euclidean distances are assigned to every edge in the firefighter graph. Because Erdős-Rényi does not guarantee connected graphs, Erdos Connected generates a series of graphs $G′ = (V′, E′)$ of size $n ≤ |V′| < n + ⌈n/ 4⌉$ following the Erdős-Rényi model, until finding a graph $G′$ with a connected component of size $n$ which is used as $G$.
