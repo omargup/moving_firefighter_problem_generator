@@ -4,8 +4,7 @@ This package built on top of Networkx contains instances generators of the Movin
 
 - **Source:** <https://github.com/omargup/moving_firefighter_problem_generator>
 - **Tutorial:** <https://github.com/omargup/moving_firefighter_problem_generator/blob/main/tutorial.ipynb>
-- **YouTube:**
-- **Papers:**
+- **Paper:** [Gutiérrez-De-La-Paz, B. R., García-Díaz, J., Menchaca-Méndez, R., Montenegro-Meza, M. A., Menchaca-Méndez, R., & Gutiérrez-De-La-Paz, O. A. (2023). The Moving Firefighter Problem. Mathematics, 11(1), 179.](https://doi.org/10.3390/math11010179)
 
 ## Install
 
