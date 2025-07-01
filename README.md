@@ -45,7 +45,7 @@ Initially, a set of nodes are burning. At each time step, the firefighter can tr
     pip install --upgrade numpy networkx plotly
     ```
 
-2.  **Install `movingfp`:
+2.  **Install `movingfp`:**
     ```bash
     pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
     ```
@@ -86,7 +86,8 @@ G_fighter = instance_2d.G_fighter
 mfp.plot2d(instance_2d)
 ```
 
-![2D Erdos instance](img/erdos_instance.png)
+<img src="img/erdos_instance.png" width="500"/>
+
 *Fire graph in green, firefighter graph in gray, initial burnt nodes in red, and firefighter in blue.*
 
 ### 3D Example
@@ -103,7 +104,7 @@ instance_3d = mfp.erdos_connected(n=8, p=0.5, dim=3, num_fires=2)
 mfp.plot3d(instance_3d, node_size=10, plot_grid=True, plot_labels=True)
 ```
 
-![3D Erdos instance](img/3d_erdos_instance.png)
+<img src="img/3d_erdos_instance.png" width="500"/>
 
 ## Instances
 
