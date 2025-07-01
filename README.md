@@ -1,122 +1,156 @@
 # 📦 Moving Firefighter Problem Generator
 
-This package built on top of Networkx contains instances generators of the Moving Firefighter Problem (MFP) proposed by the Network and Data Science Laboratory CIC-IPN México.
+[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Paper](https://img.shields.io/badge/paper-10.3390/math11010179-red.svg)](https://doi.org/10.3390/math11010179)
+
+This package, built on top of NetworkX, contains instance generators for the Moving Firefighter Problem (MFP), a variant of the classical Firefighter Problem. The MFP was proposed by the **Network and Data Science Laboratory at CIC-IPN, México**. In the MFP, a firefighter can move continuously through a metric space to defend nodes from a spreading fire.
 
 - **Source:** <https://github.com/omargup/moving_firefighter_problem_generator>
 - **Tutorial:** <https://github.com/omargup/moving_firefighter_problem_generator/blob/main/tutorial.ipynb>
 - **Paper:** [Gutiérrez-De-La-Paz, B. R., García-Díaz, J., Menchaca-Méndez, R., Montenegro-Meza, M. A., Menchaca-Méndez, R., & Gutiérrez-De-La-Paz, O. A. (2023). The Moving Firefighter Problem. Mathematics, 11(1), 179.](https://doi.org/10.3390/math11010179)
 
-## Install
+## Table of Contents
 
-Movingfp requires Python 3.8 or greater. First, make sure you have the latest version of Numpy, Networkx, and Plotly. Install the current release of movingfp with pip:
+- [📦 Moving Firefighter Problem Generator](#-moving-firefighter-problem-generator)
+  - [Table of Contents](#table-of-contents)
+  - [Problem Description](#problem-description)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [2D Example](#2d-example)
+    - [3D Example](#3d-example)
+  - [Instances](#instances)
+  - [Generators](#generators)
+    - [Available Generators](#available-generators)
+    - [ToDo](#todo)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Citation](#citation)
 
-```bash
-pip install --upgrade numpy
-pip install --upgrade networkx
-pip install --upgrade plotly
-pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
-```
+## Problem Description
 
-## Simple example
+An instance of the Moving Firefighter Problem is defined by two graphs:
 
-Create a 2D connected erdos instance and access its attributes.
+-   **Fire Graph (`G_fire`):** The fire graph represents the instance seen from the fire's point of view; this graph with $n$ nodes in $[0,1]^d$ and the edge weights set to $1$ is created following a particular procedure (depending on the generator).
+-   **Firefighter Graph (`G_fighter`):** The firefighter graph represents the instance seen from the firefighter's point of view; it has $n+1$ nodes: the same $n$ nodes of the fire graph and an extra node representing the firefighter. The firefighter graph is a complete graph with edge weights created or computed according to the generator.
 
-```python
->>> import movingfp.gen as mfp
+Initially, a set of nodes are burning. At each time step, the firefighter can travel between any two nodes in the firefighter graph. The travel time is determined by the distance between the nodes. When the firefighter arrives at a non-burning node, it becomes defended and can no longer burn. After the firefighter moves, the fire spreads from all burning nodes to their undefended neighbors in the fire graph. The process continues until the fire can no longer spread.
 
->>> x = mfp.erdos_connected(n=8, p=0.5, num_fires=2)
+## Installation
 
->>> x.A  # Adjacency matrix (Fire graph)
-array([[0, 1, 1, 1, 0, 1, 1, 1],
-       [1, 0, 0, 1, 0, 0, 1, 0],
-       [1, 0, 0, 1, 1, 0, 1, 1],
-       [1, 1, 1, 0, 0, 1, 1, 1],
-       [0, 0, 1, 0, 0, 1, 0, 1],
-       [1, 0, 0, 1, 1, 0, 1, 0],
-       [1, 1, 1, 1, 0, 1, 0, 0],
-       [1, 0, 1, 1, 1, 0, 0, 0]])
+`movingfp` requires Python 3.8 or greater.
 
->>> x.D  # Distance matrix (Firefighter graph)
-array([[0.00, 0.65, 0.63, 0.52, 0.52, 0.93, 0.10, 0.85, 0.13],
-       [0.65, 0.00, 0.09, 0.76, 0.43, 0.30, 0.75, 0.79, 0.68],
-       [0.63, 0.09, 0.00, 0.79, 0.49, 0.37, 0.72, 0.86, 0.64],
-       [0.52, 0.76, 0.79, 0.00, 0.34, 0.90, 0.58, 0.38, 0.65],
-       [0.52, 0.43, 0.49, 0.34, 0.00, 0.56, 0.62, 0.41, 0.62],
-       [0.93, 0.30, 0.37, 0.90, 0.56, 0.00, 1.03, 0.79, 0.97],
-       [0.10, 0.75, 0.72, 0.58, 0.62, 1.03, 0.00, 0.93, 0.12],
-       [0.85, 0.79, 0.86, 0.38, 0.41, 0.79, 0.93, 0.00, 0.97],
-       [0.13, 0.68, 0.64, 0.65, 0.62, 0.97, 0.12, 0.97, 0.00]])
+1.  **Prerequisites:** Ensure you have the latest versions of `numpy`, `NetworkX`, and `plotly`.
+    ```bash
+    pip install --upgrade numpy networkx plotly
+    ```
 
->>> x.fighter_pos
-[0.01227824739797545, 0.11239886108023578]
+2.  **Install `movingfp`:
+    ```bash
+    pip install -e git+https://github.com/omargup/moving_firefighter_problem_generator#egg=movingfp
+    ```
 
->>> x.node_pos
-[[0.13869093321463077, 0.11244356285938728],
- [0.23180235707395025, 0.7575924853950116],
- [0.1474012209602784, 0.7406551989400061],
- [0.6621666555152632, 0.13657852434493012],
- [0.5356617475477887, 0.4477509299372836],
- [0.41257008317805066, 0.9963436915955056],
- [0.0931113892655685, 0.02036645837312856],
- [0.9398019156431335, 0.40294581161091647]]
+## Usage
 
->>> x.burnt_nodes
-[3, 5]
+### 2D Example
 
->>> G_fire = x.G_fire  # networkx fire graph
-<networkx.classes.graph.Graph at 0x7f8835947700>
-
->>> G_fighter = x.G_fighter  # networkx firefighter graph
-<networkx.classes.graph.Graph at 0x7f8835947a00>
-```
-
-Draw the instance. Fire graph in green, firefighter graph in gray, initial burnt nodes in red, and firefighter in blue.
+Create a 2D connected Erdos-Rényi instance and access its attributes:
 
 ```python
->>> mfp.plot2d(x)
+import movingfp.gen as mfp
+
+# Generate a 2D instance
+instance_2d = mfp.erdos_connected(n=8, p=0.5, num_fires=2)
+
+# Access attributes
+print("Adjacency Matrix (Fire Graph):")
+print(instance_2d.A)
+
+print("\nDistance Matrix (Firefighter Graph):")
+print(instance_2d.D)
+
+print("\nFirefighter Position:")
+print(instance_2d.fighter_pos)
+
+print("\nNode Positions:")
+print(instance_2d.node_pos)
+
+print("\nInitial Burnt Nodes:")
+print(instance_2d.burnt_nodes)
+
+# Get NetworkX graphs
+G_fire = instance_2d.G_fire
+G_fighter = instance_2d.G_fighter
+
+# Plot the instance
+mfp.plot2d(instance_2d)
 ```
 
 ![2D Erdos instance](img/erdos_instance.png)
+*Fire graph in green, firefighter graph in gray, initial burnt nodes in red, and firefighter in blue.*
 
+### 3D Example
 
-## Simple example 2
-
-Create a 3D connected erdos instance.
+Create a 3D connected Erdos-Rényi instance:
 
 ```python
->>> import movingfp.gen as mfp
+import movingfp.gen as mfp
 
->>> x = mfp.erdos_connected(n=8, p=0.5, dim=3, num_fires=2)
+# Generate a 3D instance
+instance_3d = mfp.erdos_connected(n=8, p=0.5, dim=3, num_fires=2)
 
-
->>> mfp.plot3d(x, node_size=10, plot_grid=True, plot_labels=True)
+# Plot the 3D instance
+mfp.plot3d(instance_3d, node_size=10, plot_grid=True, plot_labels=True)
 ```
 
 ![3D Erdos instance](img/3d_erdos_instance.png)
 
+## Instances
 
-## Instaces
+Every MFP instance created by this package has the following attributes:
 
-An instance of the Moving Firefighter Problem consists of two main parts: a fire graph and a firefighter graph.
-
-- The fire graph `G_fire` represents the instance seen from the fire's point of view; this graph with $n$ nodes in $[0,1]^d$ and the edge weights set to $1$ is created following a particular procedure (depending on the generator).
-- The firefighter graph `G_fighter` represents the instance seen from the firefighter's point of view; it has $n+1$ nodes: the same $n$ nodes of the fire graph and an extra node representing the firefighter. The firefighter graph is a complete graph with edge weights created or computed according to the generator.
-
-Every MFP instance provides the following attributes:
-
-- `A`. The $n \times n$ adjacency matrix of the fire graph.
-- `D`. The $(n+1) \times (n+1)$ distance matrix of the firefighter graph where the last row and column are the firefighter distances to every node.
-- `fighter_pos`. The $d$-dimensional firefighter position.
-- `node_pos`. A $n \times d$ matrix with the node positions.
-- `num_fires`. List with the indices of the initial burnt nodes.
-- `G_fire`. Networkx fire graph.
-- `G_fighter`. Networkx firefighter graph.
+-   `A`: The $n \times n$ adjacency matrix of the fire graph.
+-   `D`: The $(n+1) \times (n+1)$ distance matrix of the firefighter graph (the last row/column represents the firefighter's distances to the other nodes).
+-   `fighter_pos`: The $d$-dimensional coordinates of the firefighter's initial position.
+-   `node_pos`: An $n \times d$ matrix of node coordinates.
+-   `burnt_nodes`: A list of initially burning nodes.
+-   `G_fire`: The NetworkX fire graph.
+-   `G_fighter`: The NetworkX firefighter graph.
 
 ## Generators
 
-MFP generators follow different strategies to create random instances. In all cases, by default, the initial position of the firefighter is selected at random in $[0,1]^d$; in the same way, once the number of initial fires is selected, their position is randomly set among all nodes.
+MFP generators create random instances. By default, the firefighter's initial position is selected at random while the initial fire locations are chosen uniformly at random among all nodes. For a detailed explanation of how each generator creates instances, please see the [documentation](docs/generators.md).
 
-Currently, these generators are available:
+### Available Generators
 
-- Base generators
-  - **Erdos Connected:** Nodes of an Erdős-Rényi graph are placed randomly, with a uniform probability in $[0,1]^d$. Each of the possible edges is added with probability $p$. Euclidean distances are assigned to every edge in the firefighter graph. Because Erdős-Rényi does not guarantee connected graphs, Erdos Connected generates a series of graphs $G′ = (V′, E′)$ of size $n ≤ |V′| < n + ⌈n/ 4⌉$ following the Erdős-Rényi model, until finding a graph $G′$ with a connected component of size $n$ which is used as $G$.
+-   **Erdos Connected:** Nodes of an Erdős-Rényi graph are placed uniformly at random in $[0,1]^d$ . Edges are added with probability $p$. To ensure connectivity, the generator creates a series of graphs until a connected component of size $n$ is found.
+
+### ToDo
+
+- **No Metric Erdos:** An Erdos instance with random weights (distances) in a given interval assigned to each edge in the firefighter graph.
+- **REDS:** The $n$ nodes are placed randomly, with a uniform probability in the unit square $[0,1]^2$. The edges are generated following the Energy-Constrained Spatial Social Network Model proposed in <https://eprints.soton.ac.uk/364826/>. Euclidean distances are assigned to every edge in the firefighter graph.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Citation
+
+If you use this generator in your research, please cite the following paper:
+
+```bibtex
+@article{gutierrez2023moving,
+  title={The Moving Firefighter Problem},
+  author={Guti{\'e}rrez-De-La-Paz, B. R. and Garc{\'i}a-D{\'i}az, J. and Menchaca-M{\'e}ndez, R. and Montenegro-Meza, M. A. and Menchaca-M{\'e}ndez, R. and Guti{\'e}rrez-De-La-Paz, O. A.},
+  journal={Mathematics},
+  volume={11},
+  number={1},
+  pages={179},
+  year={2023},
+  publisher={MDPI}
+}
+```
